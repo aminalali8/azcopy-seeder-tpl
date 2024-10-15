@@ -21,3 +21,4 @@ variables:
   - description: 'The path to download the files/folders in the target'
     name: 'DOWNLOAD_PATH'
     type: 'string'
+discoverable: true
