@@ -1,0 +1,20 @@
+kind: Environment
+name: azcopy-seeder
+type: primary
+templateVariables:
+  AZURE_STORAGE_ACCOUNT: 'storage account name'
+  AZURE_SAS_TOKEN: 'sas token'
+  DOWNLOAD_PATH: 'download path in target'
+components: 
+    -
+        kind: DockerImage
+        name: azcopy-seeder
+        gitRepo: 'https://github.com/aminalali8/azcopy-seeder-tpl.git'
+        gitBranch: main
+        gitApplicationPath: /
+        context: /
+        dockerfile: Dockerfile
+        args:
+          AZURE_STORAGE_ACCOUNT: {{template.vars.AZURE_STORAGE_ACCOUNT}}
+          AZURE_SAS_TOKEN: {{template.vars.AZURE_SAS_TOKEN}}
+          DOWNLOAD_PATH: {{template.vars.DOWNLOAD_PATH}}

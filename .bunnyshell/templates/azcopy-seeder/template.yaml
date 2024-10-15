@@ -1,0 +1,23 @@
+name: AZCopy Seeder Template
+description: This template showcases how to seed files/folders from azure storage.
+tags:
+    - azure
+    - storage
+    - docker image
+icons: [ 'azure', 'docker' ]
+categories:
+    - database
+stack:
+  packages:
+    - name: AZCopy
+      version: '10.26'
+variables:
+  - description: 'The storage account name'  
+    name: 'AZURE_STORAGE_ACCOUNT'
+    type: 'string'
+  - description: 'SAS token for authentication'  
+    name: 'AZURE_SAS_TOKEN'
+    type: 'string'
+  - description: 'The path to download the files/folders in the target'
+    name: 'DOWNLOAD_PATH'
+    type: 'string'
