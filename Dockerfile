@@ -1,32 +1,30 @@
-# Use Alpine Linux with x86_64 architecture as the base image
-FROM --platform=linux/amd64 alpine:latest
+# Use a minimal Debian-based image
+FROM debian:buster-slim
 
-# Set the maintainer label
-LABEL maintainer="amin@bunnyshell.com"
+# Install dependencies: curl, bash, and ca-certificates
+RUN apt-get update && \
+    apt-get install -y curl bash ca-certificates apt-transport-https gnupg lsb-release && \
+    # Add Microsoft GPG key for Azure CLI
+    curl -sL https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
+    # Add Azure CLI software repository
+    echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $(lsb_release -cs) main" > /etc/apt/sources.list.d/azure-cli.list && \
+    # Install Azure CLI
+    apt-get update && apt-get install -y azure-cli && \
+    # Clean up APT when done
+    apt-get clean
 
-# Set the default working directory
-ARG WORKDIR_ARG
+# Install azcopy (Fix: Simplified the tar extraction without wildcards)
+RUN curl -sL https://aka.ms/downloadazcopy-v10-linux -o azcopy_linux.tar.gz && \
+    mkdir -p /azcopy && \
+    tar -xzf azcopy_linux.tar.gz -C /azcopy --strip-components=1 && \
+    mv /azcopy/azcopy /usr/local/bin/azcopy && \
+    rm -rf azcopy_linux.tar.gz /azcopy
 
-# Install required packages: curl for downloading AzCopy and bash for the script
-RUN apk add --no-cache curl bash
+# Copy the Bash script to the container
+COPY entrypoint.sh /usr/local/bin/download_all_file_shares.sh
 
-# Download and install AzCopy
-RUN curl -sL https://aka.ms/downloadazcopy-v10-linux | tar -xz && \
-    mv ./azcopy_linux_amd64_*/azcopy /usr/local/bin/ && \
-    rm -rf ./azcopy_linux_amd64_*
+# Give the script execution permissions
+RUN chmod +x /usr/local/bin/download_all_file_shares.sh
 
-RUN mkdir -p ${WORKDIR_ARG}
-
-# Set the working directory
-WORKDIR ${WORKDIR_ARG}
-
-
-
-# Copy the entrypoint script into the container
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-
-# Make the entrypoint script executable
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
-# Set the entrypoint to the script
-ENTRYPOINT ["entrypoint.sh"]
+# Set the entry point to the script
+ENTRYPOINT ["/usr/local/bin/download_all_file_shares.sh"]

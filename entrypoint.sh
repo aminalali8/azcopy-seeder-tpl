@@ -1,14 +1,26 @@
 #!/bin/bash
 
+###
+# Required environment variables:
+# - AZURE_STORAGE_ACCOUNT: The name of the Azure Storage account.
+# - AZURE_SAS_TOKEN: The Shared Access Signature (SAS) token for the Azure Storage account.
+# - DOWNLOAD_PATH: The path to download the file shares to.
+###
+
 # Check if required environment variables are set
-if [ -z "$AZURE_STORAGE_ACCOUNT" ] || [ -z "$AZURE_SAS_TOKEN" ] || [ -z "$CONTAINER_NAME" ]; then
-  echo "AZURE_STORAGE_ACCOUNT, AZURE_SAS_TOKEN, and CONTAINER_NAME must be set."
+if [ -z "$AZURE_STORAGE_ACCOUNT" ] || [ -z "$AZURE_SAS_TOKEN" ]; then
+  echo "AZURE_STORAGE_ACCOUNT and AZURE_SAS_TOKEN must be set."
   exit 1
 fi
 
-# Loop through the arguments and download each folder
-for folder in "$@"
+# List all file shares in the storage account
+file_shares=$(az storage share list --account-name "$AZURE_STORAGE_ACCOUNT" --sas-token "$AZURE_SAS_TOKEN" --query "[].name" -o tsv)
+
+# Loop through all file shares and download each into its own folder
+for file_share in $file_shares
 do
-  echo "Downloading folder: $folder"
-  azcopy copy "https://${AZURE_STORAGE_ACCOUNT}.blob.core.windows.net/${CONTAINER_NAME}/${folder}/*?${AZURE_SAS_TOKEN}" "./${folder}" --recursive
+  echo "Downloading file share: $file_share"
+  azcopy copy "https://${AZURE_STORAGE_ACCOUNT}.file.core.windows.net/${file_share}?${AZURE_SAS_TOKEN}" "${DOWNLOAD_PATH}/${file_share}" --recursive
 done
+
+echo "All file shares have been downloaded to ${DOWNLOAD_PATH}."
