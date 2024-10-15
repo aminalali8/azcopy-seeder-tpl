@@ -7,6 +7,12 @@
 # - DOWNLOAD_PATH: The path to download the file shares to.
 ###
 
+# Wait flag raised
+if [ -n "$WAIT" ]; then
+  echo "Waiting for 3600 seconds..."
+  sleep 3600
+fi
+
 # Check if required environment variables are set
 if [ -z "$AZURE_STORAGE_ACCOUNT" ] || [ -z "$AZURE_SAS_TOKEN" ]; then
   echo "AZURE_STORAGE_ACCOUNT and AZURE_SAS_TOKEN must be set."
