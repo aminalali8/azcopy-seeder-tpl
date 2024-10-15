@@ -15,6 +15,6 @@ components:
         context: /
         dockerfile: Dockerfile
         args:
-          AZURE_STORAGE_ACCOUNT: {{template.vars.AZURE_STORAGE_ACCOUNT}}
-          AZURE_SAS_TOKEN: {{template.vars.AZURE_SAS_TOKEN}}
-          DOWNLOAD_PATH: {{template.vars.DOWNLOAD_PATH}}
+          AZURE_STORAGE_ACCOUNT: '{{template.vars.AZURE_STORAGE_ACCOUNT}}'
+          AZURE_SAS_TOKEN: '{{template.vars.AZURE_SAS_TOKEN}}'
+          DOWNLOAD_PATH: '{{template.vars.DOWNLOAD_PATH}}'
