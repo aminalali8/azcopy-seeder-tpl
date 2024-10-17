@@ -26,7 +26,7 @@ file_shares=$(az storage share list --account-name "$AZURE_STORAGE_ACCOUNT" --sa
 for file_share in $file_shares
 do
   echo "Downloading file share: $file_share"
-  azcopy copy "https://${AZURE_STORAGE_ACCOUNT}.file.core.windows.net/${file_share}?${AZURE_SAS_TOKEN}" "${DOWNLOAD_PATH}/${file_share}" --recursive
+  azcopy copy "https://${AZURE_STORAGE_ACCOUNT}.file.core.windows.net/${file_share}?${AZURE_SAS_TOKEN}" "${DOWNLOAD_PATH}/" --recursive
 done
 
 echo "All file shares have been downloaded to ${DOWNLOAD_PATH}."
